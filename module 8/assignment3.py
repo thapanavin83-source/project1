@@ -1,38 +1,29 @@
 
 import mysql.connector
-from geopy import distance
-# %%
-# Establish a connection
-
-
-def get_airport_coordinates(icao_code):
-    query = f"select latitude_deg, longitude_deg FROM airport where ident = '{icao_code}'"
-    cursor = connection.cursor()
-    cursor.execute(query)
-    result = cursor.fetchall()
-    return result
-
+from geopy.distance import geodesic
 
 connection = mysql.connector.connect(
-    user="root",
-    password="123456789",
     host="localhost",
-    database="flight_game",
-    autocommit=True
+    user="root",
+    password="123",
+    database="airports",
+    autocommit=True,
 )
-# %%
+
+def get_airport_corordinates(icao_code):
+   SQL = f"SELECT latitude_deg, longitude_deg FROM flight WHERE ident = '{icao_code}'"
+   SQL_cursor = connection.cursor()
+   SQL_cursor.execute(SQL)
+   result = SQL_cursor.fetchone()
+   return result
 
 
 def run_airport_distance():
-    first_icao_code = input("Enter the ICAO code of the first airport: ")
-    first_location = get_airport_coordinates(first_icao_code)
-    second_icao_code = input("Enter the ICAO code of the second airport: ")
-    second_location = get_airport_coordinates(second_icao_code)
-    first_coordinate = (first_location[0][0], first_location[0][1])
-    second_coordinate = (second_location[0][0], second_location[0][1])
-    result = distance.distance(first_coordinate, second_coordinate).km
-    print(f"Distance between {first_icao_code} and {second_icao_code}: {result} kilometers")
+    icao_code1 = input("Enter the ICAO code of the first airport: ").upper()
+    icao_code2 = input ("Enter the ICAO code of the second airport: ").upper()
+    airport1_coordinates = get_airport_corordinates(icao_code1)
+    airport2_coordinates = get_airport_corordinates(icao_code2)
+    distance = geodesic(airport1_coordinates, airport2_coordinates).km
+    print (f"Distance between {icao_code1} and {icao_code2}: {distance:0.2f} kilometres")
 
-
-# %%
 run_airport_distance()

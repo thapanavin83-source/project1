@@ -1,31 +1,25 @@
-# %%
-import mysql.connector
-# %%
-# Establish a connection
 
+import mysql.connector
 
 def get_airports_by_country(country_code):
-    query = f"select count(*) from airport WHERE iso_country = '{country_code}' GROUP BY type ORDER BY type DESC"
-    cursor = connection.cursor()
-    cursor.execute(query)
-    result = cursor.fetchall()
-    print(f"Airports in {country_code}: \n{result[0][0]} small_airport airports\n{result[1][0]} medium_airport airports\n{result[2][0]} heliport airports\n{result[3][0]} large_airport airports")
+    connection = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="123",
+        database="airports",
+        autocommit=True,
+    )
+    SQL = f"SELECT type, COUNT(*) as airport_count FROM flight WHERE iso_country='{country_code}' GROUP BY type ORDER BY airport_count DESC"
+    SQL_cursor = connection.cursor()
+    SQL_cursor.execute(SQL)
+    result= SQL_cursor.fetchall()
     return result
 
-
-connection = mysql.connector.connect(
-    user="root",
-    password="123456789",
-    host="localhost",
-    database="flight_game",
-    autocommit=True
-)
-
-
 def run_country_program():
-    country_code = input("Enter the country code (e.g., FI for Finland):")
-    get_airports_by_country(country_code)
+    country_code = input("Enter country code (e.g., FI for Finland): ").upper()
+    airports = get_airports_by_country(country_code)
+    print (f"Airports in {country_code}:")
+    for airport in airports:
+        print(f"{airport[1]} {airport[0]} airports")
 
-
-# %%
 run_country_program()
